@@ -3,10 +3,13 @@ package com.sillyplayer.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sillyplayer.data.MusicRepository
+import com.sillyplayer.model.AppTheme
+import com.sillyplayer.model.AudioQuality
 import com.sillyplayer.model.PlaybackState
 import com.sillyplayer.model.Playlist
 import com.sillyplayer.model.RepeatMode
 import com.sillyplayer.model.Song
+import com.sillyplayer.model.UserSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +34,9 @@ class MusicViewModel(
 
     private val _favorites = MutableStateFlow<Set<String>>(emptySet())
     val favorites: StateFlow<Set<String>> = _favorites.asStateFlow()
+
+    private val _userSettings = MutableStateFlow(UserSettings())
+    val userSettings: StateFlow<UserSettings> = _userSettings.asStateFlow()
 
     init {
         loadData()
@@ -185,5 +191,41 @@ class MusicViewModel(
                 current + songId
             }
         }
+    }
+
+    fun updateAudioQuality(quality: AudioQuality) {
+        _userSettings.update { it.copy(audioQuality = quality) }
+    }
+
+    fun updateCrossfade(seconds: Int) {
+        _userSettings.update { it.copy(crossfadeSeconds = seconds) }
+    }
+
+    fun toggleGaplessPlayback() {
+        _userSettings.update { it.copy(isGaplessEnabled = !it.isGaplessEnabled) }
+    }
+
+    fun toggleAutoplay() {
+        _userSettings.update { it.copy(isAutoplayEnabled = !it.isAutoplayEnabled) }
+    }
+
+    fun updateTheme(theme: AppTheme) {
+        _userSettings.update { it.copy(theme = theme) }
+    }
+
+    fun toggleDownloadWifiOnly() {
+        _userSettings.update { it.copy(downloadWifiOnly = !it.downloadWifiOnly) }
+    }
+
+    fun setSleepTimer(minutes: Int) {
+        _userSettings.update { it.copy(sleepTimerMinutes = minutes) }
+    }
+
+    fun clearCache() {
+        _userSettings.update { it.copy(cacheSizeMb = 0) }
+    }
+
+    fun resetSettings() {
+        _userSettings.value = UserSettings()
     }
 }
